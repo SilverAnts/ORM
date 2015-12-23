@@ -1,0 +1,56 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#"  Debug="False" Description="业务访问层" ResponseEncoding="UTF-8" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+
+<%@ Property Name="ClassNameSpace" Type="System.String"  Optional="False" Category="Options" Description="命名空间" %>
+<%@ Property Name="ORMLayerNameSpace" Type="System.String"  Optional="False" Category="Options" Description="ORM命名空间" %>
+<%@ Property Name="SourceTableConnection" Type="SchemaExplorer.TableSchemaCollection"  Category="Options" Description="选择表" %>
+
+using <%=ORMLayerNameSpace %>.Utilities;
+
+namespace <%=ClassNameSpace %>
+{ 	
+    public static class Repository
+    {
+
+        #region 表访问类
+        <%
+        string tableName=string.Empty;
+        string stableName=string.Empty;
+        for(int i=0;i<SourceTableConnection.Count;i++){
+            stableName=SourceTableConnection[i].Name;
+            tableName=GetPascalCaseNameStyle(stableName);
+        %>
+        public static DataAccess<<%=stableName%>> <%=tableName%> {get { return Singleton<DataAccess<<%=stableName%>>>.GetInstance(); }}
+        <%}%>
+        #endregion
+        
+        #region SQL
+        public static DataAccess Sql { get { return new DataAccess(); } }
+        #endregion
+    }
+}
+
+<script runat="template">
+public string GetPascalCaseNameStyle(string name)
+        {
+			string[] splitNames;			
+			char[] splitter = {'_', ' ','-'};
+			splitNames = name.Split(splitter);		
+			
+			
+            string pascalName = "";
+            foreach (string s in splitNames)
+            {
+                if (s.Length > 0)
+                    pascalName += s.Substring(0, 1).ToUpper() + s.Substring(1).ToLower();
+            }
+
+            return pascalName;
+        }
+</script>

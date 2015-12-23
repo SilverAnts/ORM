@@ -1,0 +1,6 @@
+D:\Work\SilverAnts\SilverAnts\bin\Release\SilverAnts.dll
+D:\Work\SilverAnts\SilverAnts\bin\Release\SilverAnts.pdb
+D:\Work\SilverAnts\SilverAnts\bin\Release\MySql.Data.dll
+D:\Work\SilverAnts\SilverAnts\obj\Release\ResolveAssemblyReference.cache
+D:\Work\SilverAnts\SilverAnts\obj\Release\SilverAnts.dll
+D:\Work\SilverAnts\SilverAnts\obj\Release\SilverAnts.pdb

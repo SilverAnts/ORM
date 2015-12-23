@@ -1,0 +1,135 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#"  Debug="False" Description="生成实体类" ResponseEncoding="UTF-8" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
+
+<%@ Property Name="ClassNameSpace" Type="System.String"  Optional="False" Category="Options" Description="命名空间" %>
+<%@ Property Name="ORMLayerNameSpace" Type="System.String"  Optional="False" Category="Options" Description="ORM命名空间" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema"  Category="Options" Description="Options" %>
+
+using System;
+using <%=ORMLayerNameSpace %>.Element;
+
+namespace <%=ClassNameSpace %>
+{ 
+    [Serializable]
+    [TableName("<%=SourceTable.Name%>")]
+    [PrimaryKey("ID",Generator.Native)]
+    public class <%=SourceTable.Name%>
+    {
+        #region 成员
+    	<%
+        string typeStr=string.Empty;
+        for(int i=0;i<SourceTable.Columns.Count;i++){
+        typeStr =DataType2CSharpType(SourceTable.Columns[i].DataType);
+        if(typeStr!="string"&&SourceTable.Columns[i].AllowDBNull)
+        {
+            typeStr+="?";
+        }
+        %>
+         public <%=typeStr%> <%=FirstUpper(SourceTable.Columns[i].Name)%> { get; set; }
+       <%}%>
+       #endregion
+    }
+}
+<script runat="template">
+// My methods here.
+
+#region 调用函数
+
+public string FirstUpper(string ColumnName)
+    {
+    	string cName=ColumnName.Substring(0,1);
+    	return cName.ToUpper()+ColumnName.Substring(1);
+    }
+/// <summary>
+/// 
+/// </summary>
+/// <param name="name"></param>
+/// <returns></returns>
+public string GetPascalCaseNameStyle(string name)
+    {
+		string[] splitNames;
+		
+		char[] splitter = {'_', ' ','-'};
+		splitNames = name.Split(splitter);		
+		
+		
+        string pascalName = "";
+        foreach (string s in splitNames)
+        {
+            if (s.Length > 0)
+                pascalName += s.Substring(0, 1).ToUpper() + s.Substring(1).ToLower();
+        }
+
+        return pascalName;
+    }
+
+ public string DataType2CSharpType(System.Data.DbType dbType)
+    {
+        switch (dbType)
+        {
+            case DbType.AnsiString:
+                return "string";
+            case DbType.AnsiStringFixedLength:
+                return "string";
+            case DbType.Binary:		
+                return "byte[]";			
+            case DbType.Boolean:
+                return "bool";
+            case DbType.Byte:
+                return "byte";
+            case DbType.Currency:
+                return "decimal";
+            case DbType.Date:
+                return "DateTime";
+            case DbType.DateTime:
+                return "DateTime";
+            case DbType.DateTime2:
+                return "DateTime";
+            case DbType.DateTimeOffset:
+                return "DateTime";
+            case DbType.Decimal:
+                return "decimal";
+            case DbType.Double:
+                return "double";
+            case DbType.Guid:
+                return "Guid";
+            case DbType.Int16:
+                return "short";
+            case DbType.Int32:
+                return "int";
+            case DbType.Int64:
+                return "long";
+            case DbType.Object:
+                return "string";
+            case DbType.SByte:
+                return "sbyte";
+            case DbType.Single:
+                return "float";
+            case DbType.String:
+                return "string";
+            case DbType.StringFixedLength:
+                return "string";
+            case DbType.Time:
+                return "DateTime";
+            case DbType.UInt16:
+                return "ushort";
+            case DbType.UInt32:
+                return "uint";
+            case DbType.UInt64:
+                return "ulong";
+            case DbType.VarNumeric:
+                return "decimal";
+            case DbType.Xml:
+                return "string";	
+            default:
+                return "string";
+        }
+    }   
+#endregion
+</script>

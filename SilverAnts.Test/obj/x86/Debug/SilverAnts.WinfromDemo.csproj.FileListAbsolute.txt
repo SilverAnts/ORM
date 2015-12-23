@@ -1,0 +1,15 @@
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.WinfromDemo.exe.config
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.WinfromDemo.exe
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.WinfromDemo.pdb
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.Core.dll
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.Entity.dll
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.Core.pdb
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.Entity.pdb
+D:\Work\ORM\SilverAnts.WinfromDemo\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\Work\ORM\SilverAnts.WinfromDemo\obj\x86\Debug\SilverAnts.WinfromDemo.Main.resources
+D:\Work\ORM\SilverAnts.WinfromDemo\obj\x86\Debug\SilverAnts.WinfromDemo.Properties.Resources.resources
+D:\Work\ORM\SilverAnts.WinfromDemo\obj\x86\Debug\GenerateResource.read.1.tlog
+D:\Work\ORM\SilverAnts.WinfromDemo\obj\x86\Debug\GenerateResource.write.1.tlog
+D:\Work\ORM\SilverAnts.WinfromDemo\obj\x86\Debug\SilverAnts.WinfromDemo.exe
+D:\Work\ORM\SilverAnts.WinfromDemo\obj\x86\Debug\SilverAnts.WinfromDemo.pdb
+D:\Work\ORM\SilverAnts.WinfromDemo\bin\Debug\SilverAnts.Test.exe.config

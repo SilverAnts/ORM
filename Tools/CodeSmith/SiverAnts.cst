@@ -1,0 +1,203 @@
+﻿<%@ CodeTemplate Language="C#"  Debug="False" Description="SiverAnts模板-生成实体类/业务层（仓储和封装）" ResponseEncoding="UTF-8"  %>
+
+<%@ Assembly Name="System.Web" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="SchemaExplorer" %>
+
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Web" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Text" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+
+<%-- 1. 实体层模板(实体类和数据层) --%>
+<%@ Register Name="EntityTemplate" Template="Entity\Entity.cst" %>
+ 
+
+<%-- 2. 业务处理层（封装和仓储） --%>
+<%@ Register Name="BLLTemplate" Template="BLL\Service.cst" %>
+<%@ Register Name="ReposityTemplate" Template="BLL\Repository.cst" %>
+
+<%-- 3. 默认命名空间 --%>
+<%@ Property Name="ORMLayerNameSpace" Type="System.String" Optional="False" Category="各层命名空间" Default="SilverAnts" Description="ORM命名空间" %>
+<%@ Property Name="EntityLayerNameSpace" Type="System.String" Optional="False" Category="各层命名空间" Default="Entity" Description="实体层的命名空间" %>
+<%@ Property Name="BLLLayerNameSapce" Type="System.String" Optional="False" Category="各层命名空间" Default="BLL" Description="BLL层命名空间" %>
+
+<%-- 4. 数据源--表集合 --%>
+<%@ Property Name="ChooseSourceDatabase" Type="SchemaExplorer.DatabaseSchema" DeepLoad="true" Optional="False" Category="数据源选项" Description="需要生成数据的数据源" %>
+<%@ Property Name="SourceTables" Type="SchemaExplorer.TableSchemaCollection" Optional="False" Category="数据源选项" Description="需要生成的表集合" %>
+
+<script runat="template">
+
+#region 私有变量	
+	private string templateOutputDirectory = String.Empty;
+	private CodeTemplate _entityTemplate;
+	private string nameSapce="";
+#endregion
+
+#region 属性
+	
+	
+	[CodeTemplateProperty(CodeTemplatePropertyOption.Required)]
+	[Category("命名空间")]
+	[Description("根目录的命名空间，如数据库名为Nothwind，则可以命名为MDAN.Northwind")]
+	[DefaultValue("")]	
+	public string NameSpace 
+	{ 
+		get
+		{
+			if (nameSapce.Length == 0)
+			{
+				nameSapce =  (ChooseSourceDatabase != null ? ChooseSourceDatabase.Name : "");
+			}
+			return nameSapce;
+		}
+		set
+		{
+			nameSapce = value;
+		} 
+	}
+	
+	[Browsable(false)]
+	public DatabaseSchema SourceDatabase 
+	{ 
+		get
+		{
+			return ChooseSourceDatabase;
+		}
+		set
+		{
+			ChooseSourceDatabase = value;
+		} 
+	}
+	
+	[Editor(typeof(System.Windows.Forms.Design.FolderNameEditor), typeof(System.Drawing.Design.UITypeEditor))] 
+	[Optional, NotChecked]
+	[Category("选项")]
+	[Description("输出文件的路径")]
+	[DefaultValue("")]
+	public string OutputDirectory 
+	{ 
+		get
+		{
+			if (templateOutputDirectory.Length == 0)
+			{
+				return @"D:\CodeSimith\" + (ChooseSourceDatabase != null ? SourceDatabase.Name : "Output");
+			}
+			else
+			{
+				return templateOutputDirectory;
+			}
+		}
+		set
+		{
+			if (value.EndsWith("\\")) value = value.Substring(0, value.Length - 1);
+			templateOutputDirectory = value;
+		} 
+	}	
+#endregion	
+
+public override void Render(TextWriter writer)
+{
+	this.Progress.MaximumValue=100;
+	this.Progress.Step = 1;
+    
+	this.Progress.Increment(5);
+	this.Progress.PerformStep();
+    if (Directory.Exists(OutputDirectory))
+            Directory.Delete(OutputDirectory,true);
+      
+    //命名空间
+    string EntityALLNameSpace=NameSpace+"."+EntityLayerNameSpace;
+    string BLLALLLayerNameSapce=NameSpace+"."+BLLLayerNameSapce;
+
+    //存放文件夹
+    string EntityFolder=string.Format("{0}\\{1}",OutputDirectory,EntityALLNameSpace);
+    string BLLFolder=string.Format("{0}\\{1}",OutputDirectory,BLLALLLayerNameSapce);
+    //进程...
+	this.Progress.Increment(15);
+	this.Progress.PerformStep();
+    RenderEntityLayer(EntityFolder,EntityALLNameSpace);
+    writer.WriteLine("实体层生成成功");	
+	this.Progress.Increment(15);
+	this.Progress.PerformStep();
+    RenderBLLLayer(BLLFolder,BLLALLLayerNameSapce,EntityALLNameSpace);
+    writer.WriteLine("业务访问层生成成功");	
+	this.Progress.Increment(5);
+	this.Progress.PerformStep();
+ 
+	this.Progress.PerformStep(); 
+}
+
+#region Entity
+public void RenderEntityLayer(string folderUrl,string nameSpace)
+{
+    string folder=string.Format("{0}\\{1}",folderUrl,"Entity");
+	
+    Directory.CreateDirectory(folderUrl);
+	Directory.CreateDirectory(folder);
+	if (!folder.EndsWith("\\"))
+			folder = String.Format("{0}\\", folder);
+	//生成表实体类    
+	CodeTemplate template= new EntityTemplate();
+	foreach(TableSchema table in SourceTables)
+	{
+		template.SetProperty("SourceTable",table);
+		template.SetProperty("ClassNameSpace",nameSpace);   
+		template.SetProperty("ORMLayerNameSpace",ORMLayerNameSpace);   
+		template.RenderToFile(string.Format("{0}\\{1}.cs",folder,table.Name),true);		    
+	}
+	template.Dispose();   
+}
+
+#endregion
+
+#region BLL
+public void RenderBLLLayer(string folderUrl,string nameSpace,string EntityNameSpace)
+{  
+    string folder=string.Format("{0}\\{1}",folderUrl,"Service");
+    Directory.CreateDirectory(folderUrl);	
+	Directory.CreateDirectory(folder);
+    //生成访问类
+    foreach(TableSchema table in SourceTables)
+	{
+        CodeTemplate template=new BLLTemplate();    
+        template.SetProperty("ClassNameSpace",nameSpace);  
+        template.SetProperty("EntityNameSpace",EntityNameSpace); 
+        template.SetProperty("SourceTable",table);
+        template.RenderToFile(string.Format("{0}\\{1}Service.cs",folder,GetPascalCaseNameStyle(table.Name)),true);
+        template.Dispose();   
+    }
+   	//生成访问类
+    CodeTemplate template1=new ReposityTemplate();    
+    template1.SetProperty("ClassNameSpace",nameSpace);  
+	template1.SetProperty("ORMLayerNameSpace",ORMLayerNameSpace);   
+    template1.SetProperty("SourceTableConnection",SourceTables); 
+    template1.RenderToFile(string.Format("{0}\\{1}.cs",folderUrl,"DataRepository"),true);
+    template1.Dispose();    
+	
+}
+
+#endregion
+
+public string GetPascalCaseNameStyle(string name)
+{
+	string[] splitNames;	
+	char[] splitter = {'_', ' ','-'};
+	splitNames = name.Split(splitter);		
+	
+	
+    string pascalName = "";
+    foreach (string s in splitNames)
+    {
+        if (s.Length > 0)
+            pascalName += s.Substring(0, 1).ToUpper() + s.Substring(1).ToLower();
+    }
+
+    return pascalName;
+}
+
+</script>
+

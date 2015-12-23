@@ -1,0 +1,186 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#"  Debug="False" Description="业务访问层" ResponseEncoding="UTF-8" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+
+<%@ Property Name="ClassNameSpace" Type="System.String"  Optional="False" Category="Options" Description="命名空间" %>
+<%@ Property Name="EntityNameSpace" Type="System.String"  Optional="False" Category="Options" Description="命名空间" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema"  Category="Options" Description="Options" %>
+
+
+using System;
+using System.Collections.Generic;
+using <%=EntityNameSpace%>;
+using <%=ClassNameSpace%>.Common;
+
+namespace <%=ClassNameSpace%>.Service
+{ 	
+    public class <%=GetPascalCaseNameStyle(SourceTable.Name)%>Service  
+    {
+    
+        #region 查询
+        /// <summary>
+        /// 实体类集合
+        /// </summary>
+        /// <param name="where">Where对象,拼接的Where条件</param>
+        /// <returns></returns>
+        public static List<<%=SourceTable.Name%>> GetEntityList()
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.GetEntityList();
+        }
+        /// <summary>
+        /// 实体类集合
+        /// </summary>
+        /// <param name="where">Where对象,拼接的Where条件</param>
+        /// <returns></returns>
+        public static List<<%=SourceTable.Name%>> GetEntityList(Sql where)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.GetEntityList(where.Text, where.Parameters);
+        }
+        /// <summary>
+        /// 分页数据
+        /// </summary>
+        /// <param name="where">Where对象,拼接的Where条件</param>
+        /// <param name="ii_PageIndex">页码</param>
+        /// <param name="ii_PageSize">页容量</param>
+        /// <param name="ii_Count">总条数</param>
+        /// <returns></returns>
+        public static List<<%=SourceTable.Name%>> GetEntityList(Sql where, int pageIndex, int pageSize, out int count)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.GetEntityList(where.Text, where.Parameters, pageIndex, pageSize, out count);
+        }
+        /// <summary>
+        /// 单个实例
+        /// </summary>
+        /// <param name="where">Where对象,拼接的Where条件</param>
+        /// <returns></returns>
+        public static <%=SourceTable.Name%> GetSingleEntity(Sql where)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.GetSingleEntity(where.Text, where.Parameters);
+        }
+
+        /// <summary>
+        /// 单个实例 -主键
+        /// </summary>
+        /// <param name="uid">uid</param>
+        /// <returns></returns>
+        public static <%=SourceTable.Name%> GetSingleEntity(object uid)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.GetSingleEntity(uid);
+        }
+        
+        
+        #endregion
+
+        #region CUD
+
+        #region C
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Insert(<%=SourceTable.Name%> entity)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Insert(entity);
+        }
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Insert(List<<%=SourceTable.Name%>> entitys)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Insert(entitys);
+        }
+        #endregion
+
+        #region U
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Update(<%=SourceTable.Name%> entity)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Update(entity);
+        }
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Update(string where,object entity)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Update(where,entity);
+        }
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Update(object uid,object entity)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Update(uid,entity);
+        }
+        #endregion
+
+        #region D
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Delete(object uid)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Delete(uid);
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Delete(string where,object data)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Delete(where,data);
+        }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public static bool Delete(<%=SourceTable.Name%> entity)
+        {
+            return Repository.<%=GetPascalCaseNameStyle(SourceTable.Name)%>.Delete(entity);
+        }
+
+        #endregion
+
+        #endregion
+    }
+}
+
+<script runat="template">
+public string GetPascalCaseNameStyle(string name)
+        {
+			string[] splitNames;			
+			char[] splitter = {'_', ' ','-'};
+			splitNames = name.Split(splitter);		
+			
+			
+            string pascalName = "";
+            foreach (string s in splitNames)
+            {
+                if (s.Length > 0)
+                    pascalName += s.Substring(0, 1).ToUpper() + s.Substring(1).ToLower();
+            }
+
+            return pascalName;
+        }
+</script>
