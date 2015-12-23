@@ -109,7 +109,7 @@ namespace SilverAnts.Core.Utilities
 
         #endregion
 
-        #region Base64
+        #region Base64fdsa
 
         public static string EncodeBase64(string source)
         {
